@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1 viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Shantell+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      #days-until {
+        font: 7vh "Shantell Sans", cursive;
+      }
+      #title {
+        font: 5vh "ABeeZee", sans-serif;
+        text-align: center;
+      }
+      body {
+        font-family: "ABeeZee";
+        background-color: #fffdc8;
+        /* Image by Steve Schoger from https://heropatterns.com/
+        CC by 4.0*/
+        background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffa580' fill-opacity='0.4'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-size: cover;
+        height: 100vh;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+      }
+
+      .container {
+        background: #f8f4e5;
+        padding: 2vh 4vh;
+        border: 2px solid black;
+        box-shadow: 15px 15px 1px #ffa580, 15px 15px 1px 2px black;
+      }
+
+      input {
+        display: block;
+        width: 100%;
+        font-size: 14pt;
+        line-height: 28pt;
+        font-family: "Shantell Sans";
+        margin-bottom: 28pt;
+        border: none;
+        border-bottom: 5px solid black;
+        background: #f8f4e5;
+        min-width: 250px;
+        padding-left: 5px;
+        outline: none;
+        color: black;
+      }
+
+      input:focus {
+        border-bottom: 5px solid #ffa580;
+      }
+
+      button {
+        display: block;
+        margin: 0 auto;
+        line-height: 28pt;
+        padding: 0 20px;
+        background: #ffa580;
+        letter-spacing: 2px;
+        transition: 0.2s all ease-in-out;
+        outline: none;
+        border: 1px solid black;
+        box-shadow: 3px 3px 1px 1px #8fb7df, 3px 3px 1px 2px black;
+        font-family: "ABeeZee", sans-serif;
+        font-size: 18px;
+      }
+      button:hover {
+        background: black;
+        color: white;
+        border: 1px solid black;
+      }
+
+      ::selection {
+        background: #ffc8ff;
+      }
+
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus {
+        border-bottom: 5px solid #95a4ff;
+        -webkit-text-fill-color: #2a293e;
+        -webkit-box-shadow: 0 0 0px 1000px #f8f4e5 inset;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      label {
+        font-size: 16pt;
+        font-family: "ABeeZee", sans-serif;
+      }
+
+      #countdown {
+        text-align: center;
+      }
+    </style>
+    <title>Countdown</title>
+  </head>
+  <body onload="calculateDays();">
+    <div id="container">
+      <div id="days-until">None</div>
+    </div>
+    <script src="
+https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js
+"></script>
+    <script>
+      function writeCountdown(countDownDate, title) {
+        // Get today's date and time
+        const now = luxon.DateTime.now();
+
+        // Find the distance between now and the countdown date
+        const i = luxon.Interval.fromDateTimes(now, countDownDate);
+        // Round up to the nearest day
+        const days = Math.ceil(i.length("days"));
+        if (isNaN(days) || days < 0) {
+          document.getElementById(
+            "days-until"
+          ).innerHTML = `<div id="countdown">Countdown complete</div>`;
+          return days;
+        }
+
+        if (days === 1) {
+          document.getElementById(
+            "days-until"
+          ).innerHTML = `<div id="countdown"><div>${days}</div><div>day</div></div>`;
+        } else {
+          document.getElementById(
+            "days-until"
+          ).innerHTML = `<div id="countdown"><div>${days}</div><div>days</div></div>`;
+        }
+
+        if (title && title !== "") {
+          document.getElementById(
+            "days-until"
+          ).innerHTML += `<div id="title"><div>until ${title}</div></div>`;
+        }
+        return days;
+      }
+
+      function redirect() {
+        const start = document.getElementById("start").value;
+        const title = document.getElementById("waiting-for").value;
+        window.location = "?until=" + start + "&title=" + title;
+      }
+
+      function calculateDays() {
+        if (window.location.search) {
+          // Get all url search params from the query string
+          const urlParams = new URLSearchParams(window.location.search);
+          const until = urlParams.get("until");
+          const title = urlParams.get("title");
+          const countDownDate = luxon.DateTime.fromISO(until);
+
+          writeCountdown(countDownDate, title);
+
+          // Update the countdown every minute
+          const x = setInterval(function () {
+            let days = writeCountdown(countDownDate, title);
+            if (days < 0) {
+              clearInterval(x);
+            }
+          }, 60000);
+        } else {
+          document.getElementById("days-until").innerHTML = `
+<div class="container">
+  <form action="javascript:redirect();">
+    <label for="start">Event date</label>
+    <input type="date" id="start" value="2024-01-01" min="2024-01-01" max="2200-12-31">
+
+    <label for="waiting-for">Event name</label>
+    <input type="text" id="waiting-for" name="waiting-for" placeholder="Retirement! 🎉">
+    <button type="submit">
+            Generate countdown
+        </button>
+  </form>
+</div>`;
+        }
+      }
+    </script>
+  </body>
+</html>
